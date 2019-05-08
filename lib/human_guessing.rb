@@ -10,8 +10,9 @@ class HumanGuessing
   private
 
   def guessme_generator
-    4.times.each do
-      @guessme << @digits.delete_at(rand(@digits.length))
+    @guessme << @digits.delete_at(@digits.last(9).sample)
+    3.times.each do
+      @guessme << @digits.delete_at(rand(@digits.length) - 1)
     end
   end
 end
