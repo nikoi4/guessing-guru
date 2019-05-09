@@ -1,5 +1,5 @@
 class HumanGuessing
-  attr_accessor :clues
+  attr_accessor :clues, :guessme
   def initialize
     @digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     @guessme = []
@@ -20,7 +20,7 @@ class HumanGuessing
         end
       end
     else
-      puts 'Error, favor de adivinar un numero de 4 digitos'
+      'Error, favor de adivinar un numero de 4 digitos'
     end
   end
 
@@ -40,11 +40,11 @@ class HumanGuessing
 end
 
 # interface
-newgame = HumanGuessing.new
-until newgame.clues[0] == 4
-  newgame.clues = [0, 0]
-  puts 'Adivina un numero de 4 digitos'
-  newgame.guessing(gets.chomp)
-  puts "#{newgame.clues[0]} Bien y #{newgame.clues[1]} Regular"
-end
-puts 'ganaste!!'
+# newgame = HumanGuessing.new
+# until newgame.clues[0] == 4
+#   newgame.clues = [0, 0]
+#   puts 'Adivina un numero de 4 digitos'
+#   newgame.guessing(gets.chomp)
+#   puts "#{newgame.clues[0]} Bien y #{newgame.clues[1]} Regular"
+# end
+# puts 'ganaste!!'
