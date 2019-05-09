@@ -1,5 +1,7 @@
 class HumanGuessing
-  attr_accessor :clues, :guessme
+  # added attr_accesor for :guessme only for running test
+  attr_reader :clues
+  attr_accessor :guessme
   def initialize
     @digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     @guessme = []
