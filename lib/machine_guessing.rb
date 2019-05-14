@@ -65,13 +65,13 @@ class MachineGuessing
 
   def ask_for_input
     @clues.push([0, 0])
-    p @clues
+    # p @clues
     puts 'how many good'
     @clues.last[0] = gets.chomp.to_i
-    p @clues
+    # p @clues
     puts 'how many regular'
     @clues.last[1] = gets.chomp.to_i
-    p @clues
+    # p @clues
   end
 
   def tell_guess
@@ -101,30 +101,26 @@ def game
   newgame = MachineGuessing.new
   newgame.guessing_generator(newgame.digits)
   newgame.guessing_generator(newgame.digits)
-  newgame.two.push(@digits.pop(2)).flatten! if newgame.one.length == 8
-  newgame.two.push(@digits.pop(2)).flatten! if newgame.one.length == 4 && newgame.two.length == 4
-  p newgame.out
-  p newgame.one
-  p newgame.two
-  p newgame.three
-  p newgame.clues
-  p newgame.guess
+  newgame.two.push(newgame.digits.pop(2)).flatten! if newgame.one.length == 8
+  newgame.two.push(newgame.digits.pop(2)).flatten! if newgame.one.length == 4 && newgame.two.length == 4
+  # p newgame.out
+  # p newgame.one
+  # p newgame.two
+  # p newgame.three
+  # p newgame.clues
+  # p newgame.guess
   until newgame.clues.last.sum == 4
     newgame.four if newgame.three.length > 4
     newgame.three_method if newgame.three.length == 4
     newgame.two_method if newgame.two.length >= 4
     newgame.guessing_generator(newgame.one) if newgame.one.length >= 4
-    p newgame.out
-    p newgame.one
-    p newgame.two
-    p newgame.three
-    p newgame.clues
-    p newgame.guess
+    # p newgame.out
+    # p newgame.one
+    # p newgame.two
+    # p newgame.three
+    # p newgame.clues
+    # p newgame.guess
   end
-  # case clue_less
-  # when 2 then @three.push(@digits.pop(2)).flatten! && three_method
-  # when 3 then @two.push(@digits.pop(2)).flatten! && two_method
-  # end
 end
 
 game
