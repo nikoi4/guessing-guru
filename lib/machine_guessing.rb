@@ -13,34 +13,41 @@ class MachineGuessing
     if @three.length >= 3
       @three << @one.pop if @two.empty? && !@one.empty?
       @three << @two.pop unless @two.empty?
-      @three << @three.shift if @two.empty? && @one.empty?
       @guess = @three.pop(4)
       input
       conditional = analyze(3)
       case conditional
-      when 0 then apend_guess(@three, @guess, 4)
-      when -1 then apend_guess(@three, @guess, 4).pop
+      when 0 then apender(@three, @guess, 4)
+      when -1 then apender(@three, @guess, 4).pop
       end
     end
+    if @two.empty? && @one.empty?
+      @guess = @three.push(@three.shift).last(4)
+      input
+    end
     if @three.length == 2
-      apend_guess(@three, @two, 2) if @one.empty?
-      apend_guess(@three, @one, 2) if @two.empty?
+      apender(@three, @two, 2) if @one.empty?
+      apender(@three, @one, 2) if @two.empty?
       @guess = @three.pop(4)
       input
-      take_action
+      conditional = analyze(3)
+      case conditional
+      when 0 then apender(@three, @guess, 4)
+      when -1 then apender(@three, @guess, 4).pop
+      end
     end
   end
 
   def two_method
     @two << @two.shift if @two.length > 4
-    @two << @one.pop if @two.length < 4 && !@one.empty?
+    apender(@two, @one, 2) if @two.length == 2 && !@one.empty?
     @guess = @two.pop(4)
     input
     conditional = analyze(2)
     case conditional
-    when 1 then apend_guess(@three, @guess, 4)
-    when 0 then apend_guess(@two, @guess, 4)
-    when -1 then apend_guess(@one, @guess, 4)
+    when 1 then apender(@three, @guess, 4)
+    when 0 then apender(@two, @guess, 4)
+    when -1 then apender(@one, @guess, 4)
     end
     @guess.pop(4) if @clues.last.sum.zero?
   end
@@ -53,9 +60,9 @@ class MachineGuessing
 
   def take_action
     @guess.pop(4) if @clues.last.sum.zero?
-    apend_guess(@one, @guess, 4) if @clues.last.sum == 1
-    apend_guess(@two, @guess, 4) if @clues.last.sum == 2
-    apend_guess(@three, @guess, 4) if @clues.last.sum == 3
+    apender(@one, @guess, 4) if @clues.last.sum == 1
+    apender(@two, @guess, 4) if @clues.last.sum == 2
+    apender(@three, @guess, 4) if @clues.last.sum == 3
     ordering if @clues.last.sum == 4
   end
 
@@ -102,8 +109,8 @@ class MachineGuessing
   private
 
   def validate(guess)
-    argument = [1, 0, 2, 3]
-    # p guess
+    argument = [1, 2, 0, 3]
+    p guess
     swap!(guess, argument) if guess[0].zero?
   end
 
@@ -132,7 +139,7 @@ class MachineGuessing
     return -1 if @clues.last.sum < g_plus_r
   end
 
-  def apend_guess(giver, taker, amount)
+  def apender(taker, giver, amount)
     taker.push(giver.pop(amount)).flatten!
   end
 end
