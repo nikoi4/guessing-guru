@@ -7,31 +7,7 @@ class MachineGuessing
     @one = []
     @digits = (0..9).to_a
     @clues = []
-    # @winning = []
   end
-
-  # def four
-  #   @winning = @three.pop(@three.length) if @winning.empty?
-  #   @winning << @winning.shift
-  #   @guess = @winning.pop(4)
-  #   puts 'four'
-  #   p @winning
-  #   p @three
-  #   p @two
-  #   p @one
-  #   p @digits
-  #   p @guess
-  #   input
-  #   p @winning
-  #   p @three
-  #   p @two
-  #   p @one
-  #   p @digits
-  #   p @guess
-  #   # conditional = analyze(3)
-  #   @winning.push(@guess.pop(4)).flatten!
-  #   @guess = @winning
-  # end
 
   def three_method
     if @three.length >= 3
@@ -39,42 +15,18 @@ class MachineGuessing
       @three << @two.pop unless @two.empty?
       @three << @three.shift if @two.empty? && @one.empty?
       @guess = @three.pop(4)
-      # puts 'three'
-      # p @three
-      # p @two
-      # p @one
-      # p @digits
-      # p @guess
       input
-      # puts 'three'
-      # p @three
-      # p @two
-      # p @one
-      # p @digits
-      # p @guess
       conditional = analyze(3)
       case conditional
-      when 0 then @three.push(@guess.pop(4)).flatten!
-      when -1 then @three.push(@guess.pop(4)).flatten!.pop
+      when 0 then apend_guess(@three, @guess, 4)
+      when -1 then apend_guess(@three, @guess, 4).pop
       end
     end
     if @three.length == 2
-      @three.push(@two.pop(2)).flatten! if @one.empty?
-      @three.push(@one.pop(2)).flatten! if @two.empty?
+      apend_guess(@three, @two, 2) if @one.empty?
+      apend_guess(@three, @one, 2) if @two.empty?
       @guess = @three.pop(4)
-      # puts 'three'
-      # p @three
-      # p @two
-      # p @one
-      # p @digits
-      # p @guess
       input
-      # puts 'three'
-      # p @three
-      # p @two
-      # p @one
-      # p @digits
-      # p @guess
       take_action
     end
   end
@@ -83,24 +35,12 @@ class MachineGuessing
     @two << @two.shift if @two.length > 4
     @two << @one.pop if @two.length < 4 && !@one.empty?
     @guess = @two.pop(4)
-    # puts 'two'
-    # p @three
-    # p @two
-    # p @one
-    # p @digits
-    # p @guess
     input
-    # puts 'two'
-    # p @three
-    # p @two
-    # p @one
-    # p @digits
-    # p @guess
     conditional = analyze(2)
     case conditional
-    when 1 then @three.push(@guess.pop(4)).flatten!
-    when 0 then @two.push(@guess.pop(4)).flatten!
-    when -1 then @one.push(@guess.pop(4)).flatten!
+    when 1 then apend_guess(@three, @guess, 4)
+    when 0 then apend_guess(@two, @guess, 4)
+    when -1 then apend_guess(@one, @guess, 4)
     end
     @guess.pop(4) if @clues.last.sum.zero?
   end
@@ -112,52 +52,17 @@ class MachineGuessing
   end
 
   def take_action
-    # puts 'takeaction'
-    # p @three
-    # p @two
-    # p @one
-    # p @digits
-    # p @guess
     @guess.pop(4) if @clues.last.sum.zero?
-    @one.push(@guess.pop(4)).flatten! if @clues.last.sum == 1
-    @two.push(@guess.pop(4)).flatten! if @clues.last.sum == 2
-    @three.push(@guess.pop(4)).flatten! if @clues.last.sum == 3
+    apend_guess(@one, @guess, 4) if @clues.last.sum == 1
+    apend_guess(@two, @guess, 4) if @clues.last.sum == 2
+    apend_guess(@three, @guess, 4) if @clues.last.sum == 3
     ordering if @clues.last.sum == 4
-    # p @three
-    # p @two
-    # p @one
-    # p @digits
-    # p @guess
-  end
-
-  def validate(guess)
-    argument = [1, 0, 2, 3]
-    # p guess
-    swap!(guess, argument) if guess[0].zero?
-  end
-
-  def swap!(number, arguments)
-    number[0], number[1], number[2], number [3] = number[arguments[0]], number[arguments[1]], number[arguments[2]], number[arguments[3]]
   end
 
   def input
     validate(@guess)
     tell_guess
     ask_for_input
-  end
-
-  def ask_for_input
-    @clues.push([0, 0])
-    # p @clues
-    puts 'how many good'
-    @clues.last[0] = gets.chomp.to_i
-    # p @clues
-    puts 'how many regular'
-    @clues.last[1] = gets.chomp.to_i
-  end
-
-  def tell_guess
-    puts "I think your number is #{@guess.join}"
   end
 
   def ordering
@@ -194,14 +99,31 @@ class MachineGuessing
     @clues[-2].sum + @clues[-1].sum
   end
 
-  # def ordering
-  #   @guess.push(@guess.pop(4).shuffle).flatten! && input if @clues.last[0] == 1 || @clues.last[0].zero?
-  #   swap!(@guess, 0, 1) && input if @clues.last[0] == 2
-  #   swap!(@guess, 0, 1) && swap!(@guess, 2, 3) && input if @clues.last[0].zero?
-  #   swap!(@guess, 0, 1) && swap!(@guess, 1, 2) && input if @clues.last[0] == 1
-  # end
-
   private
+
+  def validate(guess)
+    argument = [1, 0, 2, 3]
+    # p guess
+    swap!(guess, argument) if guess[0].zero?
+  end
+
+  def swap!(number, arguments)
+    number[0], number[1], number[2], number [3] = number[arguments[0]], number[arguments[1]], number[arguments[2]], number[arguments[3]]
+  end
+
+  def tell_guess
+    puts "I think your number is #{@guess.join}"
+  end
+
+  def ask_for_input
+    @clues.push([0, 0])
+    # p @clues
+    puts 'how many good'
+    @clues.last[0] = gets.chomp.to_i
+    # p @clues
+    puts 'how many regular'
+    @clues.last[1] = gets.chomp.to_i
+  end
 
   def analyze(g_plus_r)
     return 4 if @clues.last.sum == 4
@@ -209,13 +131,17 @@ class MachineGuessing
     return 0 if @clues.last.sum == g_plus_r
     return -1 if @clues.last.sum < g_plus_r
   end
+
+  def apend_guess(giver, taker, amount)
+    taker.push(giver.pop(amount)).flatten!
+  end
 end
 # if good + regular 4 move to guess delete from others
 # if good + regular 3 move to 75 delete from others
 # if good + regular 2 move to 50 delete from others
 # if good + regular 1 move to 25 delete from others
 # if good + regular 0 move to out delete from others
-# 1457
+
 def game
   newgame = MachineGuessing.new
   newgame.guessing_generator(newgame.digits)
@@ -235,5 +161,5 @@ def game
   newgame.ordering until newgame.clues.last[0] == 4
   puts "See, I told you I was going to get it!! Your number is #{newgame.guess.join}"
 end
-#9105
+
 game
