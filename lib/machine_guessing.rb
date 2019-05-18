@@ -10,7 +10,8 @@ class MachineGuessing
   end
 
   def three_method
-    if @three.length >= 3
+    p "tres"
+    if @three.length >= 3 && (!@two.empty? || !@one.empty?)
       @three << @one.pop if @two.empty? && !@one.empty?
       @three << @two.pop unless @two.empty?
       @guess = @three.pop(4)
@@ -22,12 +23,20 @@ class MachineGuessing
       end
     end
     if @two.empty? && @one.empty?
-      @guess = @three.push(@three.shift).last(4)
+      p @three
+      if @clues.last.sum == 3
+        @guess = @three.rotate!(-1).last(4)
+      end
+      if @clues.last.sum == 2
+        @guess = @three.rotate!(-2).last(4)
+      end
       input
     end
     if @three.length == 2
-      apender(@three, @two, 2) if @one.empty?
+      p @three
+      apender(@three, @two, 2) unless @two.empty?
       apender(@three, @one, 2) if @two.empty?
+      p @three
       @guess = @three.pop(4)
       input
       conditional = analyze(3)
@@ -39,7 +48,8 @@ class MachineGuessing
   end
 
   def two_method
-    @two << @two.shift if @two.length > 4
+    p "dos"
+    @two.push(@two.shift(3).shuffle).flatten!  if @two.length > 4
     apender(@two, @one, 2) if @two.length == 2 && !@one.empty?
     @guess = @two.pop(4)
     input
@@ -53,6 +63,7 @@ class MachineGuessing
   end
 
   def guessing_generator(array)
+    p "uno"
     4.times.each do
       @guess << array.delete_at(rand(array.length) - 1)
     end
@@ -78,27 +89,28 @@ class MachineGuessing
     c2 = [[0, 1, 3, 2], [1, 0, 2, 3], [3, 1, 2, 0]]
     i = 0
     while @clues.last[0].zero?
-      i += 1
       temp = @guess
       swap!(@guess, c0[i])
       input
       @guess = temp
+      i += 1
+      @clues.last[0] = 2 if i == c0.length
     end
     i = 0
     while @clues.last[0] == 1
-      i += 1
       temp = @guess
       swap!(@guess, c1[i])
       input
       @guess = temp
+      i += 1
     end
     i = 0
     while @clues.last[0] == 2
-      i += 1
       temp = @guess
       swap!(@guess, c2[i])
       input
       @guess = temp
+      i += 1
     end
   end
 
@@ -109,7 +121,7 @@ class MachineGuessing
   private
 
   def validate(guess)
-    argument = [1, 2, 0, 3]
+    argument = [1, 0, 2, 3]
     p guess
     swap!(guess, argument) if guess[0].zero?
   end
@@ -168,5 +180,5 @@ def game
   newgame.ordering until newgame.clues.last[0] == 4
   puts "See, I told you I was going to get it!! Your number is #{newgame.guess.join}"
 end
-
-# game
+#8340
+game
