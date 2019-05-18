@@ -169,4 +169,4 @@ def game
   puts "See, I told you I was going to get it!! Your number is #{newgame.guess.join}"
 end
 
-game
+# game
