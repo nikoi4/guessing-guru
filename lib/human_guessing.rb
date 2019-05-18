@@ -12,6 +12,8 @@ class HumanGuessing
   end
 
   def guess_vs_guessme(guess)
+    @good = 0
+    @regular = 0
     guess.split('').each do |digit|
       if @guessme.include?(digit.to_i) && guess.index(digit) == @guessme.index(digit.to_i)
         @good += 1
