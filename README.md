@@ -1,4 +1,4 @@
-# guessing-guru (RUBY)
+# Guessing-Guru (RUBY)
 
 El juego para adivinar un numero de cuatro cifras (que no se repiten) consiste en que el "pensador" piensa un numero de 4 cifras (como "1234" o "9072"). El "adivinador" prueba de adivinar el numero diciendo un numero de 4 cifras y el "pensador" le dice cuantas cifras están en el lugar correcto y cuantas en el lugar incorrecto
 Ejemplo:
@@ -14,4 +14,5 @@ Pensador: respuesta 4 bien, 0 regular (ya que todo los números están en el lug
 
 
 correr en terminal -> ruby human_router.rb la computadora piensa el numero y un humano lo trata de adivinar
+
 correr en terminal -> ruby machine_router.rb humano piensa el numero y la computadora lo trata de adivinar
