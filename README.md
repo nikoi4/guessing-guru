@@ -13,6 +13,6 @@ Adivinador: 1234...
 Pensador: respuesta 4 bien, 0 regular (ya que todo los números están en el lugar correcto). JUEGO TERMINADO!
 
 
-correr en terminal -> ruby human_router.rb la computadora piensa el numero y un humano lo trata de adivinar
+correr en terminal -> ruby lib/human_router.rb la computadora piensa el numero y un humano lo trata de adivinar
 
-correr en terminal -> ruby machine_router.rb humano piensa el numero y la computadora lo trata de adivinar
+correr en terminal -> ruby lib/machine_router.rb humano piensa el numero y la computadora lo trata de adivinar
