@@ -1,10 +1,10 @@
 require_relative '../lib/machine_guessing'
 
-describe HumanGuessing do
+describe MachineGuessing do
   describe '#guessing' do
     it "first digit can't be 0" do
       newgame = MachineGuessing.new
-      newgame.guessing_generator(newgame.digits)
+      newgame.guessing_generator
 
       actual = newgame.guess[0]
       expected = '0'
@@ -14,7 +14,7 @@ describe HumanGuessing do
 
     it 'does not repeat digits' do
       newgame = MachineGuessing.new
-      newgame.guessing_generator(newgame.digits)
+      newgame.guessing_generator
       guess = newgame.guess
       check = []
 
@@ -28,9 +28,9 @@ describe HumanGuessing do
       expect(actual).to eq(expected)
     end
 
-    it "returns '4 good and 0 regular' if guess matches machine number" do
+    it 'guess is a 4 digit number' do
       newgame = MachineGuessing.new
-      newgame.guessing_generator(newgame.digits)
+      newgame.guessing_generator
 
       actual = newgame.guess.length
       expected = 4
@@ -39,7 +39,3 @@ describe HumanGuessing do
     end
   end
 end
-
-# guess does not start with 0
-# guess does not repeat digits
-# guess does not repeat itself
