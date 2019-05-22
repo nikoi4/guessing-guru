@@ -5,7 +5,11 @@ class MachineView
 
   def ask_for(question)
     puts question
-    puts '>'
+    print '>'
     gets.chomp.to_i
+  end
+
+  def winner(guess)
+    puts "I new I was going to get it! #{guess.join}"
   end
 end
