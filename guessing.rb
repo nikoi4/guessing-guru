@@ -7,7 +7,7 @@ class Guessing
       playing
       puts 'Ganaste! Queres intentarlo otra vez?(si o no)'
       print '> '
-      running = quit(gets.chomp)
+      running = quit(gets.chomp.downcase)
     end
   end
 
