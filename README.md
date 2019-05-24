@@ -12,7 +12,3 @@ Pensador: respuesta 0 bien, 4 regular (ya que no hay cifras en el lugar correcto
 Adivinador: 1234...
 Pensador: respuesta 4 bien, 0 regular (ya que todo los números están en el lugar correcto). JUEGO TERMINADO!
 
-
-correr en terminal -> ruby lib/human_router.rb la computadora piensa el numero y un humano lo trata de adivinar
-
-correr en terminal -> ruby lib/machine_router.rb humano piensa el numero y la computadora lo trata de adivinar
