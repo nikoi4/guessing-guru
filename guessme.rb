@@ -19,6 +19,7 @@ class Guessme
       print '>'
       running = quit(gets.chomp.downcase)
     end
+  end
 
   private
 
@@ -40,7 +41,7 @@ class Guessme
     guessing_generator
     get_input
     take_action
-    order_guess if clues.last.sum == 4
+    order_guess if @clues.last.sum == 4
   end
 
   def prepare
@@ -49,12 +50,12 @@ class Guessme
 
   def third_guess_and_more
     until ok
-      if three.empty?
-        two_two if two.length == 2
-        two_six if two.length == 6
-        two_eight if two.length == 8
+      if @three.empty?
+        two_two if @two.length == 2
+        two_six if @two.length == 6
+        two_eight if @two.length == 8
       end
-      three_three_or_more unless three.empty?
+      three_three_or_more unless @three.empty?
     end
   end
 
@@ -64,27 +65,27 @@ class Guessme
       one_good if how_many_good == 1
       two_good if how_many_good == 2
     end
-    @view.winner(guess)
+    winner(@guess)
   end
 
   def endgame?
-    clues.last[0] == 4
+    @clues.last[0] == 4
   end
 
   def get_input
     validate
-    @view.tell_guess(guess)
-    good = @view.ask_for('How many good')
-    regular = @view.ask_for('How many regular')
+    tell_guess(@guess)
+    good = ask_for('How many good')
+    regular = ask_for('How many regular')
     until good + regular >= 0 && good + regular < 5
-      good = @view.ask_for('How many good')
-      regular = @view.ask_for('How many regular')
+      good = ask_for('How many good')
+      regular = ask_for('How many regular')
     end
-    clues.push([good, regular])
+    @clues.push([good, regular])
   end
 
   def ok
-    clues.last.sum == 4
+    @clues.last.sum == 4
   end
 
   def three_three_or_more
@@ -116,17 +117,17 @@ class Guessme
   end
 
   def how_many_good
-    clues.last[0]
+    @clues.last[0]
   end
 
   def zero_good
     c0 = [[1, 0, 3, 2], [1, 2, 3, 0], [2, 3, 0, 1], [2, 0, 3, 1], [3, 2, 1, 0], [3, 0, 1, 2]]
     i = 0
-    temp = guess.dup
+    temp = @guess.dup
     while how_many_good.zero?
-      clues.last[0] = 2 if i == c0.length
-      guess = temp.dup
-      swap!(guess, c0[i])
+      @clues.last[0] = 2 if i == c0.length
+      @guess = temp.dup
+      swap!(@guess, c0[i])
       get_input
       i += 1
     end
@@ -135,11 +136,11 @@ class Guessme
   def one_good
     c1 = [[0, 2, 3, 1], [0, 3, 1, 2], [3, 1, 0, 2], [3, 0, 2, 1], [2, 1, 3, 0], [2, 0, 1, 3], [1, 3, 2, 0], [1, 2, 0, 3]]
     i = 0
-    temp = guess.dup
+    temp = @guess.dup
     while how_many_good == 1
-      clues.last[0] = 2 if i == c1.length
-      guess = temp.dup
-      swap!(guess, c1[i])
+      @clues.last[0] = 2 if i == c1.length
+      @guess = temp.dup
+      swap!(@guess, c1[i])
       get_input
       i += 1
     end
@@ -148,11 +149,11 @@ class Guessme
   def two_good
     c2 = [[0, 1, 3, 2], [1, 0, 2, 3], [3, 1, 2, 0]]
     i = 0
-    temp = guess.dup
+    temp = @guess.dup
     while how_many_good == 2
-      clues.last[0] = 0 if i == c2.length
-      guess = temp.dup
-      swap!(guess, c2[i])
+      @clues.last[0] = 0 if i == c2.length
+      @guess = temp.dup
+      swap!(@guess, c2[i])
       get_input
       i += 1
     end
@@ -230,14 +231,31 @@ class Guessme
     taker.push(giver.pop(amount)).flatten!
   end
 
+  def tell_guess(guess)
+    puts "I think your number is #{guess.join}"
+  end
+
+  def ask_for(question)
+    puts question
+    print '>'
+    gets.chomp.to_i
+  end
+
+  def winner(guess)
+    puts "I new I was going to get it! #{guess.join}"
+  end
+
   def quit(option)
     if option == 'no'
       puts 'Hasta la vista baby!'
       running = false
     elsif option == 'yes'
-      run
-      running = true
+      Guessme.new.run
+      running = false
     end
     running
   end
 end
+
+newgame = Guessme.new
+newgame.run
