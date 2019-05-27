@@ -70,6 +70,7 @@ class Guessing
       running = false
     elsif option == 'si'
       run
+      running = true
     end
     running
   end
