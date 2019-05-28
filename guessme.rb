@@ -33,7 +33,6 @@ class Guessme
 
       deal_with_digits
       guess = third_guess_and_more
-      p guess
       order_guess(guess)
     end
   end
@@ -251,6 +250,7 @@ class Guessme
       puts 'Hasta la vista baby!'
       running = false
     elsif option == 'yes'
+      puts `clear`
       Guessme.new.run
       running = false
     end
