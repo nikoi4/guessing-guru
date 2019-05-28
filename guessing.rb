@@ -3,7 +3,7 @@ class Guessing
     running = true
     while running
       puts 'Bienvenido a Guessing Guru'
-      puts '------------------------'
+      puts '--------------------------'
       playing
       puts 'Ganaste! Queres intentarlo otra vez?(si o no)'
       print '> '
@@ -67,12 +67,11 @@ class Guessing
   def quit(option)
     if option == 'no'
       puts 'Hasta la proxima!'
-      running = false
+      false
     elsif option == 'si'
-      run
-      running = true
+      puts `clear`
+      true
     end
-    running
   end
 end
 
