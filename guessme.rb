@@ -121,7 +121,7 @@ class Guessme
 
   def two_get_guess
     appender(@two, @one, 2) if @two.length == 2
-    @two.rotate!(-1) if @two.length > 4
+    @two.rotate!(-1) if @two.length > 6
     guess = @two.pop(4)
     get_input(guess)
   end
@@ -133,7 +133,7 @@ class Guessme
 
   def two_six_take_action(guess)
     appender(@three, guess, 4) if how_many_guessed == 3
-    appender(@two, swap!(guess, [3, 1, 2, 0]), 4) if how_many_guessed == 2
+    appender(@two, guess.shuffle!, 4) && @two.rotate!(-1) if how_many_guessed == 2
     appender(@two, guess, 4) && @two.rotate!(-2) if how_many_guessed == 1
   end
 
@@ -160,7 +160,7 @@ class Guessme
   end
 
   def deal_with_digits(digits)
-    appender(@two, digits, 2) if guessed_in_last_two_clues == 2 || guessed_in_last_two_clues == 3
+    appender(@two, digits, 2) if guessed_in_last_two_clues < 4
     digits.pop(2) if guessed_in_last_two_clues == 4
   end
 
