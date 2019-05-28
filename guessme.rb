@@ -31,7 +31,7 @@ class Guessme
       break if how_many_good == 4
 
       deal_with_digits(digits)
-      guess = third_guess_and_more
+      guess = third_guess_and_more until how_many_guessed == 4
       order_guess(guess)
     end
   end
@@ -43,14 +43,12 @@ class Guessme
   end
 
   def third_guess_and_more
-    until how_many_guessed == 4
-      if @three.empty?
-        guess = two_two if @two.length == 2
-        guess = two_six if @two.length == 6
-        guess = two_eight if @two.length == 8
-      end
-      guess = three_three_or_more unless @three.empty?
+    if @three.empty?
+      guess = two_two if @two.length == 2
+      guess = two_six if @two.length == 6
+      guess = two_eight if @two.length == 8
     end
+    guess = three_three_or_more unless @three.empty?
     guess
   end
 
