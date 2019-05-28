@@ -1,10 +1,8 @@
 class Guessme
   def initialize
-    # @guess = []
     @three = []
     @two = []
     @one = []
-    @digits = (0..9).to_a
     @clues = [[0, 0]]
   end
 
@@ -24,27 +22,29 @@ class Guessme
   private
 
   def playing
+    digits = (0..9).to_a
+    @clues = [[0, 0]]
     until endgame?
-      first_and_second_guess
+      first_and_second_guess(digits)
       break if endgame?
 
-      first_and_second_guess
+      first_and_second_guess(digits)
       break if endgame?
 
-      deal_with_digits
+      deal_with_digits(digits)
       guess = third_guess_and_more
       order_guess(guess)
     end
   end
 
-  def first_and_second_guess
-    guess = guessing_generator
+  def first_and_second_guess(digits)
+    guess = guessing_generator(digits)
     take_action(guess)
     order_guess(guess) if @clues.last.sum == 4
   end
 
   def third_guess_and_more
-    until ok
+    until guessed_four
       if @three.empty?
         guess = two_two if @two.length == 2
         guess = two_six if @two.length == 6
@@ -81,7 +81,7 @@ class Guessme
     guess
   end
 
-  def ok
+  def guessed_four
     @clues.last.sum == 4
   end
 
@@ -145,7 +145,7 @@ class Guessme
     c2 = [[0, 1, 3, 2], [1, 0, 2, 3], [3, 1, 2, 0]]
     i = 0
     temp = guess.dup
-    while how_many_good == 2
+    until how_many_good == 4
       @clues.last[0] = 0 if i == c2.length
       guess = temp.dup
       swap!(guess, c2[i])
@@ -192,10 +192,10 @@ class Guessme
     appender(@three, @two, 4) if @clues.last.sum.zero?
   end
 
-  def guessing_generator
+  def guessing_generator(digits)
     guess = []
     4.times.each do
-      guess << @digits.delete_at(rand(@digits.length) - 1)
+      guess << digits.delete_at(rand(digits.length) - 1)
     end
     get_input(guess)
   end
@@ -207,9 +207,9 @@ class Guessme
     appender(@three, guess, 4) if @clues.last.sum == 3
   end
 
-  def deal_with_digits
-    @two.push(@digits.pop(2)).flatten! if clue_less == 2
-    @two.push(@digits.pop(2)).flatten! if clue_less == 3
+  def deal_with_digits(digits)
+    @two.push(digits.pop(2)).flatten! if last_two_clues == 2
+    @two.push(digits.pop(2)).flatten! if last_two_clues == 3
   end
 
   def validate(guess)
@@ -219,7 +219,7 @@ class Guessme
     guess
   end
 
-  def clue_less
+  def las_two_clues
     @clues[-2].sum + @clues[-1].sum
   end
 
@@ -251,12 +251,10 @@ class Guessme
       running = false
     elsif option == 'yes'
       puts `clear`
-      Guessme.new.run
-      running = false
+      running = true
     end
     running
   end
 end
 
-newgame = Guessme.new
-newgame.run
+Guessme.new.run
