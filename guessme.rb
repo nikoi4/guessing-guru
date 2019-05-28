@@ -8,9 +8,9 @@ class Guessme
 
   def run
     running = true
+    puts 'Welcome to Guessing Guru'
+    puts '------------------------'
     while running
-      puts 'Welcome to Guessing Guru'
-      puts '------------------------'
       puts 'Think in a 4 digit number and don\'t tell me I am going to get it!'
       playing
       puts 'I got you! Want to try it again?(yes or no)'
@@ -23,13 +23,12 @@ class Guessme
 
   def playing
     digits = (0..9).to_a
-    @clues = [[0, 0]]
-    until endgame?
-      first_and_second_guess(digits)
-      break if endgame?
-
-      first_and_second_guess(digits)
-      break if endgame?
+    until how_many_good == 4
+      2.times do
+        first_and_second_guess(digits)
+        break if how_many_good == 4
+      end
+      break if how_many_good == 4
 
       deal_with_digits(digits)
       guess = third_guess_and_more
@@ -40,11 +39,11 @@ class Guessme
   def first_and_second_guess(digits)
     guess = guessing_generator(digits)
     take_action(guess)
-    order_guess(guess) if @clues.last.sum == 4
+    order_guess(guess) if how_many_guessed == 4
   end
 
   def third_guess_and_more
-    until guessed_four
+    until how_many_guessed == 4
       if @three.empty?
         guess = two_two if @two.length == 2
         guess = two_six if @two.length == 6
@@ -56,16 +55,15 @@ class Guessme
   end
 
   def order_guess(guess)
+    c0 = [[1, 0, 3, 2], [1, 2, 3, 0], [2, 3, 0, 1], [2, 0, 3, 1], [3, 2, 1, 0], [3, 0, 1, 2]]
+    c1 = [[0, 2, 3, 1], [0, 3, 1, 2], [3, 1, 0, 2], [3, 0, 2, 1], [2, 1, 3, 0], [2, 0, 1, 3], [1, 3, 2, 0], [1, 2, 0, 3]]
+    c2 = [[0, 1, 3, 2], [1, 0, 2, 3], [3, 1, 2, 0], [0, 3, 2, 1], [2, 1, 0, 3]]
     while how_many_good < 4
-      guess = zero_good(guess) if how_many_good.zero?
-      guess = one_good(guess) if how_many_good == 1
-      guess = two_good(guess) if how_many_good == 2
+      guess = ordering(guess, 0, c0) if how_many_good.zero?
+      guess = ordering(guess, 1, c1) if how_many_good == 1
+      guess = ordering(guess, 2, c2) if how_many_good == 2
     end
     winner(guess)
-  end
-
-  def endgame?
-    @clues.last[0] == 4
   end
 
   def get_input(guess)
@@ -73,16 +71,16 @@ class Guessme
     tell_guess(guess)
     good = ask_for('How many good')
     regular = ask_for('How many regular')
-    until good + regular >= 0 && good + regular < 5
-      good = ask_for('How many good')
-      regular = ask_for('How many regular')
-    end
     @clues.push([good, regular])
     guess
   end
 
-  def guessed_four
-    @clues.last.sum == 4
+  def how_many_good
+    @clues.last[0]
+  end
+
+  def how_many_guessed
+    @clues.last.sum
   end
 
   def three_three_or_more
@@ -109,52 +107,6 @@ class Guessme
     guess
   end
 
-  def how_many_good
-    @clues.last[0]
-  end
-
-  def zero_good(guess)
-    c0 = [[1, 0, 3, 2], [1, 2, 3, 0], [2, 3, 0, 1], [2, 0, 3, 1], [3, 2, 1, 0], [3, 0, 1, 2]]
-    i = 0
-    temp = guess.dup
-    while how_many_good.zero?
-      @clues.last[0] = 2 if i == c0.length
-      guess = temp.dup
-      swap!(guess, c0[i])
-      guess = get_input(guess)
-      i += 1
-    end
-    guess
-  end
-
-  def one_good(guess)
-    c1 = [[0, 2, 3, 1], [0, 3, 1, 2], [3, 1, 0, 2], [3, 0, 2, 1], [2, 1, 3, 0], [2, 0, 1, 3], [1, 3, 2, 0], [1, 2, 0, 3]]
-    i = 0
-    temp = guess.dup
-    while how_many_good == 1
-      @clues.last[0] = 2 if i == c1.length
-      guess = temp.dup
-      swap!(guess, c1[i])
-      guess = get_input(guess)
-      i += 1
-    end
-    guess
-  end
-
-  def two_good(guess)
-    c2 = [[0, 1, 3, 2], [1, 0, 2, 3], [3, 1, 2, 0]]
-    i = 0
-    temp = guess.dup
-    until how_many_good == 4
-      @clues.last[0] = 0 if i == c2.length
-      guess = temp.dup
-      swap!(guess, c2[i])
-      guess = get_input(guess)
-      i += 1
-    end
-    guess
-  end
-
   def three_get_guess
     appender(@three, @two, 1) if @one.empty? && !@two.empty?
     appender(@three, @one, 1) unless @one.empty?
@@ -163,33 +115,33 @@ class Guessme
   end
 
   def three_take_action(guess)
-    appender(@three, guess, 4) && @three.rotate!(-1) if @clues.last.sum == 3
-    appender(@three, guess, 4).pop if @clues.last.sum == 2
+    appender(@three, guess, 4) && @three.rotate!(-1) if how_many_guessed == 3
+    appender(@three, guess, 4).pop if how_many_guessed == 2
   end
 
   def two_get_guess
-    appender(@two, @one, 2) if !@one.empty? && @two.length == 2
+    appender(@two, @one, 2) if @two.length == 2
     @two.rotate!(-1) if @two.length > 4
     guess = @two.pop(4)
     get_input(guess)
   end
 
   def two_two_take_action(guess)
-    appender(@three, guess, 4) if @clues.last.sum == 3
-    appender(@two, guess.first(2), 2) if @clues.last.sum == 2
+    appender(@three, guess, 4) if how_many_guessed == 3
+    appender(@two, guess.first(2), 2) if how_many_guessed == 2
   end
 
   def two_six_take_action(guess)
-    appender(@three, guess, 4) if @clues.last.sum == 3
-    appender(@two, guess.rotate!(-1), 4) if @clues.last.sum == 2
-    appender(@two, guess, 4) && @two.rotate!(-2) if @clues.last.sum == 1
+    appender(@three, guess, 4) if how_many_guessed == 3
+    appender(@two, swap!(guess, [3, 1, 2, 0]), 4) if how_many_guessed == 2
+    appender(@two, guess, 4) && @two.rotate!(-2) if how_many_guessed == 1
   end
 
   def two_eight_take_action(guess)
-    appender(@three, guess, 4) if @clues.last.sum == 3
-    appender(@two, guess.rotate!(-1), 4) if @clues.last.sum == 2
-    appender(@three, @two, 4) && appender(@one, guess, 4) if @clues.last.sum == 1
-    appender(@three, @two, 4) if @clues.last.sum.zero?
+    appender(@three, guess, 4) if how_many_guessed == 3
+    appender(@two, guess.rotate!(-1), 4) if how_many_guessed == 2
+    appender(@three, @two, 4) && appender(@one, guess, 4) if how_many_guessed == 1
+    appender(@three, @two, 4) if how_many_guessed.zero?
   end
 
   def guessing_generator(digits)
@@ -201,30 +153,42 @@ class Guessme
   end
 
   def take_action(guess)
-    guess.pop(4) if @clues.last.sum.zero?
-    appender(@one, guess, 4) if @clues.last.sum == 1
-    appender(@two, guess, 4) if @clues.last.sum == 2
-    appender(@three, guess, 4) if @clues.last.sum == 3
+    guess.pop(4) if how_many_guessed.zero?
+    appender(@one, guess, 4) if how_many_guessed == 1
+    appender(@two, guess, 4) if how_many_guessed == 2
+    appender(@three, guess, 4) if how_many_guessed == 3
   end
 
   def deal_with_digits(digits)
-    @two.push(digits.pop(2)).flatten! if last_two_clues == 2
-    @two.push(digits.pop(2)).flatten! if last_two_clues == 3
+    appender(@two, digits, 2) if guessed_in_last_two_clues == 2 || guessed_in_last_two_clues == 3
+    digits.pop(2) if guessed_in_last_two_clues == 4
   end
 
-  def validate(guess)
-    argument = [1, 0, 2, 3] if @clues.last.sum < 4
-    argument = [1, 2, 3, 0] if @clues.last.sum == 4
-    swap!(guess, argument) if guess[0].zero?
+  def ordering(guess, good, order)
+    i = 0
+    temp = guess.dup
+    while how_many_good == good
+      break if i == order.length
+
+      guess = temp.dup
+      swap!(guess, order[i])
+      guess = get_input(guess)
+      i += 1
+    end
     guess
   end
 
-  def las_two_clues
+  def validate(guess)
+    guess.shuffle! while guess[0].zero?
+    guess
+  end
+
+  def guessed_in_last_two_clues
     @clues[-2].sum + @clues[-1].sum
   end
 
-  def swap!(number, arguments)
-    number[0], number[1], number[2], number [3] = number[arguments[0]], number[arguments[1]], number[arguments[2]], number[arguments[3]]
+  def swap!(number, order)
+    number[0], number[1], number[2], number [3] = number[order[0]], number[order[1]], number[order[2]], number[order[3]]
   end
 
   def appender(taker, giver, amount)
@@ -247,13 +211,14 @@ class Guessme
 
   def quit(option)
     if option == 'no'
+      puts `clear`
       puts 'Hasta la vista baby!'
-      running = false
+      false
     elsif option == 'yes'
       puts `clear`
-      running = true
+      @clues = [[0, 0]]
+      true
     end
-    running
   end
 end
 
