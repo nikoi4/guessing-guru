@@ -23,12 +23,12 @@ class Guessme
 
   def playing
     digits = (0..9).to_a
-    until how_many_good == 4
+    until guessed?
       2.times do
-        first_and_second_guess(digits)
-        break if how_many_good == 4
+        guessing_attempt(digits)
+        break if guessed?
       end
-      break if how_many_good == 4
+      break if guessed?
 
       deal_with_digits(digits)
       guess = third_guess_and_more until how_many_guessed == 4
@@ -36,7 +36,7 @@ class Guessme
     end
   end
 
-  def first_and_second_guess(digits)
+  def guessing_attempt(digits)
     guess = guessing_generator(digits)
     take_action(guess)
     order_guess(guess) if how_many_guessed == 4
@@ -44,22 +44,25 @@ class Guessme
 
   def third_guess_and_more
     if @three.empty?
-      guess = two_two if @two.length == 2
-      guess = two_six if @two.length == 6
-      guess = two_eight if @two.length == 8
+      two_two_or_more
+    else
+      three_three_or_more
     end
-    guess = three_three_or_more unless @three.empty?
-    guess
   end
 
   def order_guess(guess)
     c0 = [[1, 0, 3, 2], [1, 2, 3, 0], [2, 3, 0, 1], [2, 0, 3, 1], [3, 2, 1, 0], [3, 0, 1, 2]]
     c1 = [[0, 2, 3, 1], [0, 3, 1, 2], [3, 1, 0, 2], [3, 0, 2, 1], [2, 1, 3, 0], [2, 0, 1, 3], [1, 3, 2, 0], [1, 2, 0, 3]]
     c2 = [[0, 1, 3, 2], [1, 0, 2, 3], [3, 1, 2, 0], [0, 3, 2, 1], [2, 1, 0, 3]]
-    while how_many_good < 4
-      guess = ordering(guess, 0, c0) if how_many_good.zero?
-      guess = ordering(guess, 1, c1) if how_many_good == 1
-      guess = ordering(guess, 2, c2) if how_many_good == 2
+    until guessed?
+      case how_many_good
+      when 0
+        guess = ordering(guess, 0, c0)
+      when 1
+        guess = ordering(guess, 1, c1)
+      when 2
+        guess = ordering(guess, 2, c2)
+      end
     end
     winner(guess)
   end
@@ -73,6 +76,15 @@ class Guessme
     guess
   end
 
+  def validate(guess)
+    guess.shuffle! while guess[0].zero?
+    guess
+  end
+
+  def tell_guess(guess)
+    puts "I think your number is #{guess.join}"
+  end
+
   def how_many_good
     @clues.last[0]
   end
@@ -81,35 +93,34 @@ class Guessme
     @clues.last.sum
   end
 
+  def guessed?
+    how_many_good == 4
+  end
+
   def three_three_or_more
-    guess = three_get_guess
+    if @one.empty? && !@two.empty?
+      appender(@three, @two, 1)
+    elsif !@one.empty?
+      appender(@three, @one, 1)
+    end
+    guess = @three.pop(4)
+    get_input(guess)
     three_take_action(guess)
     guess
   end
 
-  def two_two
+  def two_two_or_more
     guess = two_get_guess
-    two_two_take_action(guess)
+    p guess
+    case @two.length + guess.length
+    when 2
+      two_two_take_action(guess)
+    when 6
+      two_six_take_action(guess)
+    when 8
+      two_eight_take_action(guess)
+    end
     guess
-  end
-
-  def two_six
-    guess = two_get_guess
-    two_six_take_action(guess)
-    guess
-  end
-
-  def two_eight
-    guess = two_get_guess
-    two_eight_take_action(guess)
-    guess
-  end
-
-  def three_get_guess
-    appender(@three, @two, 1) if @one.empty? && !@two.empty?
-    appender(@three, @one, 1) unless @one.empty?
-    guess = @three.pop(4)
-    get_input(guess)
   end
 
   def three_take_action(guess)
@@ -140,6 +151,7 @@ class Guessme
     appender(@two, guess.rotate!(-1), 4) if how_many_guessed == 2
     appender(@three, @two, 4) && appender(@one, guess, 4) if how_many_guessed == 1
     appender(@three, @two, 4) if how_many_guessed.zero?
+    p @three
   end
 
   def guessing_generator(digits)
@@ -176,10 +188,6 @@ class Guessme
     guess
   end
 
-  def validate(guess)
-    guess.shuffle! while guess[0].zero?
-    guess
-  end
 
   def guessed_in_last_two_clues
     @clues[-2].sum + @clues[-1].sum
@@ -193,9 +201,6 @@ class Guessme
     taker.push(giver.pop(amount)).flatten!
   end
 
-  def tell_guess(guess)
-    puts "I think your number is #{guess.join}"
-  end
 
   def ask_for(question)
     puts question
