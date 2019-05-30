@@ -124,8 +124,12 @@ class Guessme
   end
 
   def three_take_action(guess)
-    appender(@three, guess, 4) && @three.rotate!(-1) if how_many_guessed == 3
-    appender(@three, guess, 4).pop if how_many_guessed == 2
+    case how_many_guessed
+    when 3
+      appender(@three, guess, 4) && @three.rotate!(-1)
+    when 2
+      appender(@three, guess, 4).pop
+    end
   end
 
   def two_get_guess
