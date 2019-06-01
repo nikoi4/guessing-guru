@@ -11,7 +11,7 @@ class Guessing
     end
   end
 
-  private
+  # private
 
   def playing
     guessme = guessme_generator
@@ -64,5 +64,5 @@ class Guessing
   end
 end
 
-newgame = Guessing.new
-newgame.run
+# newgame = Guessing.new
+# newgame.run

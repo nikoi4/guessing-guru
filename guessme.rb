@@ -113,7 +113,7 @@ class Guessme
     guess = two_get_guess
     p guess
     case @two.length + guess.length
-    when 2
+    when 4
       two_two_take_action(guess)
     when 6
       two_six_take_action(guess)
@@ -133,15 +133,22 @@ class Guessme
   end
 
   def two_get_guess
-    appender(@two, @one, 2) if @two.length == 2
-    @two.rotate!(-1) if @two.length > 6
+    if @two.length == 2
+      appender(@two, @one, 2)
+    elsif @two.length > 6
+      @two.rotate!(-1)
+    end
     guess = @two.pop(4)
     get_input(guess)
   end
 
   def two_two_take_action(guess)
-    appender(@three, guess, 4) if how_many_guessed == 3
-    appender(@two, guess.first(2), 2) if how_many_guessed == 2
+    case how_many_guessed
+    when 3
+      appender(@three, guess, 4)
+    when 2
+      appender(@two, guess.first(2), 2)
+    end
   end
 
   def two_six_take_action(guess)
