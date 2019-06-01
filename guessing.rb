@@ -15,28 +15,20 @@ class Guessing
 
   def playing
     guessme = guessme_generator
-    good = 0
-    until good == 4
+    loop do
       guess = ask('Adivina mi numero de 4 digitos')
-      if !valid?(guess)
-        guess = ask('No me engañes! dame un numero de 4 digitos')
-      else
-        good = guess_vs_guessme(guess, guessme)
-      end
+      guess = ask('No me engañes! dame un numero de 4 digitos') until valid?(guess)
+      good = guess_vs_guessme(guess, guessme)
+      break if good == 4
     end
   end
 
   def guess_vs_guessme(guess, guessme)
-    good = 0
-    regular = 0
-    guess.split('').each do |digit|
-      if guessme.include?(digit) && guess.index(digit) == guessme.index(digit)
-        good += 1
-      elsif guessme.include?(digit)
-        regular += 1
-      end
-    end
+    new_guess = guess.split('')
+    good = guessme.zip(new_guess).count { |g, cg| g == cg }
+    regular = (new_guess & guessme).size - good
     give_clues(good, regular)
+    good
   end
 
   def guessme_generator
@@ -47,7 +39,7 @@ class Guessing
   end
 
   def valid?(guess)
-    guess.to_i.to_s.length == 4 && guess.to_i.integer?
+    guess.to_i.digits.count == 4 && guess.to_i.integer?
   end
 
   def ask(question)
