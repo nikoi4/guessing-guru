@@ -38,6 +38,7 @@ class Guessme
 
   def guessing_attempt(digits)
     guess = guessing_generator(digits)
+    get_input(guess)
     take_action(guess)
     order_guess(guess) if how_many_guessed == 4
   end
@@ -51,20 +52,25 @@ class Guessme
   end
 
   def order_guess(guess)
-    c0 = [[1, 0, 3, 2], [1, 2, 3, 0], [2, 3, 0, 1], [2, 0, 3, 1], [3, 2, 1, 0], [3, 0, 1, 2]]
-    c1 = [[0, 2, 3, 1], [0, 3, 1, 2], [3, 1, 0, 2], [3, 0, 2, 1], [2, 1, 3, 0], [2, 0, 1, 3], [1, 3, 2, 0], [1, 2, 0, 3]]
-    c2 = [[0, 1, 3, 2], [1, 0, 2, 3], [3, 1, 2, 0], [0, 3, 2, 1], [2, 1, 0, 3]]
+    guesses = []
+    alternatives = guess.permutation(4).to_a.shuffle
     until guessed?
-      case how_many_good
-      when 0
-        guess = ordering(guess, 0, c0)
-      when 1
-        guess = ordering(guess, 1, c1)
-      when 2
-        guess = ordering(guess, 2, c2)
+      guesses << current_guess = alternatives.pop
+      current_guess = get_input(current_guess)
+      alternatives.select! do |possible_guess|
+        good = 0
+        possible_guess.each_with_index do |pg, index|
+          good += 1 if pg == current_guess[index]
+        end
+        good == @clues.last[0]
       end
     end
-    winner(guess)
+  end
+
+  def guessing_generator(digits)
+    guess = digits.shuffle!.pop(4)
+    guessing_generator while guess[0] == '0'
+    guess
   end
 
   def get_input(guess)
@@ -85,6 +91,33 @@ class Guessme
     puts "I think your number is #{guess.join}"
   end
 
+  def ask_for(question)
+    puts question
+    print '>'
+    gets.chomp.to_i
+  end
+
+  def take_action(guess)
+    case how_many_guessed
+    when 0
+      guess.pop(4)
+    when 1
+      appender(@one, guess, 4)
+    when 2
+      appender(@two, guess, 4)
+    when 3
+      appender(@three, guess, 4)
+    end
+  end
+
+  def deal_with_digits(digits)
+    if guessed_in_last_two_clues == 4
+      digits.pop(2)
+    else
+      appender(@two, digits, 2)
+    end
+  end
+
   def how_many_good
     @clues.last[0]
   end
@@ -95,6 +128,10 @@ class Guessme
 
   def guessed?
     how_many_good == 4
+  end
+
+  def guessed_in_last_two_clues
+    @clues[-2].sum + @clues[-1].sum
   end
 
   def three_three_or_more
@@ -152,75 +189,31 @@ class Guessme
   end
 
   def two_six_take_action(guess)
-    appender(@three, guess, 4) if how_many_guessed == 3
-    appender(@two, guess.shuffle!, 4) && @two.rotate!(-1) if how_many_guessed == 2
-    appender(@two, guess, 4) && @two.rotate!(-2) if how_many_guessed == 1
+    case how_many_guessed
+    when 3
+      appender(@three, guess, 4)
+    when 2
+      appender(@two, guess.shuffle!, 4) && @two.rotate!(-1)
+    when 1
+      appender(@two, guess, 4) && @two.rotate!(-2)
+    end
   end
 
   def two_eight_take_action(guess)
-    appender(@three, guess, 4) if how_many_guessed == 3
-    appender(@two, guess.rotate!(-1), 4) if how_many_guessed == 2
-    appender(@three, @two, 4) && appender(@one, guess, 4) if how_many_guessed == 1
-    appender(@three, @two, 4) if how_many_guessed.zero?
-    p @three
-  end
-
-  def guessing_generator(digits)
-    guess = []
-    4.times.each do
-      guess << digits.delete_at(rand(digits.length) - 1)
+    case how_many_guessed
+    when 3
+      appender(@three, guess, 4)
+    when 2
+      appender(@two, guess.rotate!(-1), 4)
+    when 1
+      appender(@three, @two, 4) && appender(@one, guess, 4)
+    when 0
+      appender(@three, @two, 4)
     end
-    get_input(guess)
-  end
-
-  def take_action(guess)
-    guess.pop(4) if how_many_guessed.zero?
-    appender(@one, guess, 4) if how_many_guessed == 1
-    appender(@two, guess, 4) if how_many_guessed == 2
-    appender(@three, guess, 4) if how_many_guessed == 3
-  end
-
-  def deal_with_digits(digits)
-    appender(@two, digits, 2) if guessed_in_last_two_clues < 4
-    digits.pop(2) if guessed_in_last_two_clues == 4
-  end
-
-  def ordering(guess, good, order)
-    i = 0
-    temp = guess.dup
-    while how_many_good == good
-      break if i == order.length
-
-      guess = temp.dup
-      swap!(guess, order[i])
-      guess = get_input(guess)
-      i += 1
-    end
-    guess
-  end
-
-
-  def guessed_in_last_two_clues
-    @clues[-2].sum + @clues[-1].sum
-  end
-
-  def swap!(number, order)
-    number[0], number[1], number[2], number [3] = number[order[0]], number[order[1]], number[order[2]], number[order[3]]
   end
 
   def appender(taker, giver, amount)
     taker.push(giver.pop(amount)).flatten!
-  end
-
-
-  def ask_for(question)
-    puts question
-    print '>'
-    gets.chomp.to_i
-  end
-
-  def winner(guess)
-    puts "I new I was going to get it! #{guess.join}"
   end
 
   def quit(option)
