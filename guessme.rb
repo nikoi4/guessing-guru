@@ -1,3 +1,4 @@
+# las variables de una clase no son accesibles al menos que se le de acceso explicito
 class Guessme
   def initialize
     @three = []
@@ -94,7 +95,14 @@ class Guessme
   def ask_for(question)
     puts question
     print '>'
-    gets.chomp.to_i
+    answer = gets.chomp
+    answer = correct_number_or_try_again(answer)
+  end
+
+  def correct_number_or_try_again(answer)
+    Integer(answer || '')
+  rescue ArgumentError
+    ask_for('Are you sure? Try again!')
   end
 
   def take_action(guess)
@@ -148,7 +156,6 @@ class Guessme
 
   def two_two_or_more
     guess = two_get_guess
-    p guess
     case @two.length + guess.length
     when 4
       two_two_take_action(guess)
@@ -163,7 +170,10 @@ class Guessme
   def three_take_action(guess)
     case how_many_guessed
     when 3
-      appender(@three, guess, 4) && @three.rotate!(-1)
+      appender(@three, guess, 4)
+      @three.rotate!(-1)
+      @two = []
+      @one = []
     when 2
       appender(@three, guess, 4).pop
     end
