@@ -1,3 +1,4 @@
+# Human try to guess number by machine
 class Guessing
   def run
     running = true
@@ -25,7 +26,10 @@ class Guessing
 
   def guess_vs_guessme(guess, guessme)
     new_guess = guess.split('')
-    good = guessme.zip(new_guess).count { |g, cg| g == cg }
+    good = 0
+    guessme.each_with_index do |gd, index|
+      good += 1 if gd == new_guess[index]
+    end
     regular = (new_guess & guessme).size - good
     give_clues(good, regular)
     good
@@ -34,7 +38,9 @@ class Guessing
   def guessme_generator
     digits = (0..9).to_a.map(&:to_s)
     guessme = digits.sample(4)
-    guessme_generator while guessme[0] == '0'
+    if guessme[0] == '0'
+      guessme = guessme_generator
+    end
     guessme
   end
 
@@ -64,5 +70,4 @@ class Guessing
   end
 end
 
-# newgame = Guessing.new
-# newgame.run
+# newgame = Guessing.new.run

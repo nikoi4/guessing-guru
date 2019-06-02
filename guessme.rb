@@ -1,4 +1,8 @@
-# las variables de una clase no son accesibles al menos que se le de acceso explicito
+# Human think in a number and machine tries to guess it
+# This is the way I thought of doing the HW
+# In Ruby class variables are not accessible unless access is granted
+# private(line 26) and last line are commented for the test.
+# uncomment private and Class initialization
 class Guessme
   def initialize
     @three = []
@@ -20,7 +24,7 @@ class Guessme
     end
   end
 
-  private
+  # private
 
   def playing
     digits = (0..9).to_a
@@ -70,7 +74,7 @@ class Guessme
 
   def guessing_generator(digits)
     guess = digits.shuffle!.pop(4)
-    guessing_generator while guess[0] == '0'
+    guess.shuffle! while guess[0] == 0
     guess
   end
 
@@ -239,4 +243,4 @@ class Guessme
   end
 end
 
-Guessme.new.run
+# Guessme.new.run
